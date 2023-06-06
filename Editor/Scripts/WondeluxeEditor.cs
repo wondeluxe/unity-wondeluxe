@@ -15,7 +15,7 @@ namespace WondeluxeEditor
 	/// </summary>
 
 	[CanEditMultipleObjects]
-	[CustomEditor(typeof(Component), true)]
+	[CustomEditor(typeof(UnityEngine.Object), true)]
 	public class WondeluxeEditor : Editor
 	{
 		#region Constants
