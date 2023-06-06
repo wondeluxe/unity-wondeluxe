@@ -12,5 +12,12 @@
     "extensions",
     "extension",
     "methods"
+  ],
+  "samples": [
+    {
+        "displayName": "Samples",
+        "description": "Examples of various attributes and other features included in the package.",
+        "path": "Samples"
+    }
   ]
 }
