@@ -332,22 +332,22 @@ namespace WondeluxeEditor
 
 		public static void SetValue(this SerializedProperty property, object value)
 		{
-			if (property.propertyType == SerializedPropertyType.Generic && value != null)
+			if (value != null)
 			{
 				Type type = value.GetType();
 
-				if (type.IsValueType && !type.IsPrimitive && !type.IsEnum)
+				if (property.propertyType == SerializedPropertyType.Generic && type.IsValueType && !type.IsPrimitive && !type.IsEnum)
 				{
 					// Property is a struct.
 					property.SetObjectValue(value);
 					return;
 				}
-			}
 
-			if (property.isArray && value.GetType().IsArray)
-			{
-				property.SetArrayValue(value);
-				return;
+				if (property.isArray && type.IsArray)
+				{
+					property.SetArrayValue(value);
+					return;
+				}
 			}
 
 			switch (property.propertyType)
