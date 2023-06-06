@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEditor;
+using Wondeluxe;
 
 using Object = UnityEngine.Object;
 
@@ -104,7 +105,12 @@ namespace WondeluxeEditor
 				return EditorGUILayout.EnumPopup(label, (Enum)value, options);
 			}
 
-			throw new Exception($"Object type ({value.GetType()}) not supported.");
+			if (valueType.IsArrayOrList())
+			{
+				throw new Exception($"Array and list values not supported. Label: '{label}'.");
+			}
+
+			throw new Exception($"{label} object type ({value.GetType()}) not supported.");
 		}
 	}
 }
