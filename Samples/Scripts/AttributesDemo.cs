@@ -56,10 +56,27 @@ namespace Wondeluxe.Samples
 		[Tag]
 		private string exampleTag;
 
+		[SerializeField]
+		[OnModified("OnObjectReferenceModified")]
+		[Component]
+		private Object objectReference;
+
 		[Button]
 		private void LogSecretName()
 		{
 			Debug.Log($"Secret name is '{secretName}'.");
+		}
+
+		private void OnObjectReferenceModified()
+		{
+			if (objectReference != null)
+			{
+				Debug.Log($"objectReference = {objectReference.name} ({objectReference.GetType().Name})");
+			}
+			else
+			{
+				Debug.Log($"objectReference = null");
+			}
 		}
 	}
 }

@@ -297,15 +297,19 @@ namespace WondeluxeEditor
 			return DrawEnumField(ref position, label, value.GetType(), value);
 		}
 
-		public static Object DrawObjectField(string label, Object value, bool allowSceneObjects, ref Rect position)
+		public static T DrawObjectField<T>(string label, T value, bool allowSceneObjects, ref Rect position) where T : Object
+		{
+			return DrawObjectField(label, value, typeof(T), allowSceneObjects, ref position) as T;
+		}
+
+		public static Object DrawObjectField(string label, Object value, Type type, bool allowSceneObjects, ref Rect position)
 		{
 			Rect rect = SingleLineRect(position);
 
 			position = DrawnFieldRect(position, rect, EditorGUIUtility.standardVerticalSpacing);
 
-			return EditorGUI.ObjectField(rect, label, value, value.GetType(), allowSceneObjects);
+			return EditorGUI.ObjectField(rect, label, value, type, allowSceneObjects);
 		}
-
 
 		public static bool DrawFoldout(string label, bool expanded, ref Rect position)
 		{
@@ -428,7 +432,7 @@ namespace WondeluxeEditor
 			// TODO Implement method to decide if scene objects should be allowed. Maybe just check if it's a ScriptableObject or asset type?
 
 			if (value is Object objectValue)
-				return DrawObjectField(label, objectValue, true, ref position);
+				return DrawObjectField(label, objectValue, typeof(Object), true, ref position);
 
 			Type valueType = value.GetType();
 
