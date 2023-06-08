@@ -58,6 +58,7 @@ namespace Wondeluxe.Samples
 
 		[SerializeField]
 		[OnModified("OnObjectReferenceModified")]
+		[Label("AWESOME OBJECT")]
 		[Component]
 		private Object objectReference;
 
