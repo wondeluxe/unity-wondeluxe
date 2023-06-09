@@ -22,6 +22,23 @@ namespace Wondeluxe
 		}
 
 		/// <summary>
+		/// Linearly interpolates between two vectors.
+		/// </summary>
+		/// <remarks>
+		/// Interpolates between the vectors <c>a</c> and <c>b</c> by the interpolant <c>t</c>.
+		/// </remarks>
+		/// <param name="a">From value, returned when <c>t = 0</c>.</param>
+		/// <param name="b">To value, returned when <c>t = 1</c>.</param>
+		/// <param name="t">Value used to interpolate between <c>a</c> and <c>b</c>.</param>
+		/// <returns>The interpolated vector between <c>a</c> and <c>b</c>.</returns>
+
+		public static Vector2Int Lerp(Vector2Int a, Vector2Int b, float t)
+		{
+			Vector2Int delta = b - a;
+			return new Vector2Int(a.x + (int)(delta.x * t), a.y + (int)(delta.y * t));
+		}
+
+		/// <summary>
 		/// Convert a string representation of a Vector2Int to a Vector2Int.
 		/// </summary>
 		/// <param name="value">A string representation of a Vector2Int.</param>
