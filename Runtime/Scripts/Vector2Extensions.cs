@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace Wondeluxe
@@ -186,6 +187,23 @@ namespace Wondeluxe
 		public static Vector2Int ExplicitSignToInt(Vector2 vector)
 		{
 			return new Vector2Int(MathExtensions.ExplicitSignToInt(vector.x), MathExtensions.ExplicitSignToInt(vector.y));
+		}
+
+		/// <summary>
+		/// Convert a string representation of a Vector2 to a Vector2.
+		/// </summary>
+		/// <param name="value">A string representation of a Vector2.</param>
+		/// <returns>The Vector2 represented by <c>value</c>.</returns>
+
+		public static Vector2 Parse(string value)
+		{
+			Regex regex = new Regex(@"[-]?\d+([\.,](?=\d)\d+)?(e?[+-]\d+)?");
+			MatchCollection matches = regex.Matches(value);
+
+			float x = float.Parse(matches[0].Value);
+			float y = float.Parse(matches[1].Value);
+
+			return new Vector2(x, y);
 		}
 
 		#endregion
