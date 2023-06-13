@@ -197,6 +197,11 @@ namespace Wondeluxe
 
 		public static Vector2 Parse(string value)
 		{
+			if (string.IsNullOrWhiteSpace(value))
+			{
+				return default;
+			}
+
 			Regex regex = new Regex(@"[-]?\d+([\.,](?=\d)\d+)?(e?[+-]\d+)?");
 			MatchCollection matches = regex.Matches(value);
 

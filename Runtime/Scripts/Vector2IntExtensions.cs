@@ -46,6 +46,11 @@ namespace Wondeluxe
 
 		public static Vector2Int Parse(string value)
 		{
+			if (string.IsNullOrWhiteSpace(value))
+			{
+				return default;
+			}
+
 			Regex regex = new Regex(@"[-]?\d+");
 			MatchCollection matches = regex.Matches(value);
 

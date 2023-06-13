@@ -23,7 +23,14 @@ namespace WondeluxeEditor
 		//public const float IndentationWidth = 30f;
 
 		private static readonly MethodInfo drawDefaultPropertyFieldMethodInfo = Type.GetType("UnityEditor.EditorGUI, UnityEditor").GetMethod("DefaultPropertyField", BindingFlags.Static | BindingFlags.NonPublic);
-		private static readonly object[] drawDefaultPropertyFieldParams = new object[3];
+		private static readonly MethodInfo vector2FieldMethodInfo = Type.GetType("UnityEditor.EditorGUI, UnityEditor").GetMethod("Vector2Field", BindingFlags.Static | BindingFlags.NonPublic, null, new Type[] { typeof(Rect), typeof(Vector2) }, null);
+		private static readonly MethodInfo vector2IntFieldMethodInfo = Type.GetType("UnityEditor.EditorGUI, UnityEditor").GetMethod("Vector2IntField", BindingFlags.Static | BindingFlags.NonPublic, null, new Type[] { typeof(Rect), typeof(Vector2Int) }, null);
+		private static readonly MethodInfo vector3FieldMethodInfo = Type.GetType("UnityEditor.EditorGUI, UnityEditor").GetMethod("Vector3Field", BindingFlags.Static | BindingFlags.NonPublic, null, new Type[] { typeof(Rect), typeof(Vector3) }, null);
+		private static readonly MethodInfo vector3IntFieldMethodInfo = Type.GetType("UnityEditor.EditorGUI, UnityEditor").GetMethod("Vector3IntField", BindingFlags.Static | BindingFlags.NonPublic, null, new Type[] { typeof(Rect), typeof(Vector3Int) }, null);
+		private static readonly MethodInfo vector4FieldMethodInfo = Type.GetType("UnityEditor.EditorGUI, UnityEditor").GetMethod("Vector4FieldNoIndent", BindingFlags.Static | BindingFlags.NonPublic, null, new Type[] { typeof(Rect), typeof(Vector4) }, null);
+
+		private static readonly object[] methodParams2 = new object[2];
+		private static readonly object[] methodParams3 = new object[3];
 
 		#endregion
 
@@ -46,6 +53,81 @@ namespace WondeluxeEditor
 		#endregion
 
 		#region Static API
+
+		/// <summary>
+		/// Makes an X and Y field for entering a Vector2.
+		/// </summary>
+		/// <param name="position">Rectangle on the screen to use for the field.</param>
+		/// <param name="value">The value to edit.</param>
+		/// <returns>The Vector2 value entered by the user.</returns>
+
+		public static Vector2 Vector2Field(Rect position, Vector2 value)
+		{
+			methodParams2[0] = position;
+			methodParams2[1] = value;
+
+			return (Vector2)vector2FieldMethodInfo.Invoke(null, methodParams2);
+		}
+
+		/// <summary>
+		/// Makes an X and Y field for entering a Vector2Int.
+		/// </summary>
+		/// <param name="position">Rectangle on the screen to use for the field.</param>
+		/// <param name="value">The value to edit.</param>
+		/// <returns>The Vector2Int value entered by the user.</returns>
+
+		public static Vector2Int Vector2IntField(Rect position, Vector2Int value)
+		{
+			methodParams2[0] = position;
+			methodParams2[1] = value;
+
+			return (Vector2Int)vector2IntFieldMethodInfo.Invoke(null, methodParams2);
+		}
+
+		/// <summary>
+		/// Makes an X, Y and Z field for entering a Vector3.
+		/// </summary>
+		/// <param name="position">Rectangle on the screen to use for the field.</param>
+		/// <param name="value">The value to edit.</param>
+		/// <returns>The Vector3 value entered by the user.</returns>
+
+		public static Vector3 Vector3Field(Rect position, Vector3 value)
+		{
+			methodParams2[0] = position;
+			methodParams2[1] = value;
+
+			return (Vector3)vector3FieldMethodInfo.Invoke(null, methodParams2);
+		}
+
+		/// <summary>
+		/// Makes an X, Y and Z field for entering a Vector3Int.
+		/// </summary>
+		/// <param name="position">Rectangle on the screen to use for the field.</param>
+		/// <param name="value">The value to edit.</param>
+		/// <returns>The Vector3Int value entered by the user.</returns>
+
+		public static Vector3Int Vector3IntField(Rect position, Vector3Int value)
+		{
+			methodParams2[0] = position;
+			methodParams2[1] = value;
+
+			return (Vector3Int)vector3IntFieldMethodInfo.Invoke(null, methodParams2);
+		}
+
+		/// <summary>
+		/// Makes an X, Y, Z and W field for entering a Vector4.
+		/// </summary>
+		/// <param name="position">Rectangle on the screen to use for the field.</param>
+		/// <param name="value">The value to edit.</param>
+		/// <returns>The Vector4 value entered by the user.</returns>
+
+		public static Vector4 Vector4Field(Rect position, Vector4 value)
+		{
+			methodParams2[0] = position;
+			methodParams2[1] = value;
+
+			return (Vector4)vector4FieldMethodInfo.Invoke(null, methodParams2);
+		}
 
 		/// <summary>
 		/// Returns a copy of <c>position</c> that's only a single line high (using <c>EditorGUIUtility.singleLineHeight</c>).
@@ -165,11 +247,11 @@ namespace WondeluxeEditor
 
 			position = DrawnFieldRect(position, rect, EditorGUIUtility.standardVerticalSpacing);
 
-			drawDefaultPropertyFieldParams[0] = rect;
-			drawDefaultPropertyFieldParams[1] = property;
-			drawDefaultPropertyFieldParams[2] = label;
+			methodParams3[0] = rect;
+			methodParams3[1] = property;
+			methodParams3[2] = label;
 
-			return (bool)drawDefaultPropertyFieldMethodInfo.Invoke(null, drawDefaultPropertyFieldParams);
+			return (bool)drawDefaultPropertyFieldMethodInfo.Invoke(null, methodParams3);
 		}
 
 		public static bool DrawToggle(bool value, ref Rect position)
