@@ -45,6 +45,13 @@ namespace WondeluxeEditor
 
 		private int indentLevel;
 
+		/// <summary>
+		/// childrenHandled field is used for the complicated case when a custom property drawer is invoked via <c>EditorGUILayout.PropertyField(...)</c> and handles the drawing of a property's children.
+		/// When this is the case, the children shouldn't be drawn from the WondeluxeEditor instance.
+		/// </summary>
+
+		private bool childrenHandled;
+
 		#endregion
 
 		#region Unity messages
@@ -91,6 +98,7 @@ namespace WondeluxeEditor
 					indentLevel = EditorGUI.indentLevel;
 					WondeluxePropertyDrawer.IndentLevel = EditorGUI.indentLevel;
 					WondeluxePropertyDrawer.InWondeluxeEditor = true;
+					WondeluxePropertyDrawer.OnChildrenHandled += OnPropertyChildrenHandled;
 
 					//EditorGUILayout.Space();
 					//EditorGUILayout.LabelField("Custom Inspector", EditorStyles.boldLabel);
@@ -100,6 +108,7 @@ namespace WondeluxeEditor
 					DrawCustomInspector();
 
 					WondeluxePropertyDrawer.InWondeluxeEditor = false;
+					WondeluxePropertyDrawer.OnChildrenHandled -= OnPropertyChildrenHandled;
 				}
 				else
 				{
@@ -340,18 +349,34 @@ namespace WondeluxeEditor
 
 				//Debug.Log($"isList = {isList}");
 
+				bool drawChildren;
+
 				if (isList)
 				{
 					// Need a custom draw method for lists as EditorGUILayout.PropertyField doesn't draw the foldout and array size fields when includeChildren is false.
 					serializedProperty.isExpanded = DrawListHeaderLayout(serializedProperty);
+					drawChildren = serializedProperty.isExpanded;
 				}
 				else
 				{
-					// Handles custom property drawers.
-					serializedProperty.isExpanded = EditorGUILayout.PropertyField(serializedProperty, new GUIContent(serializedProperty.displayName), false);
+					// EditorGUILayout.PropertyField uses custom property drawers, however we only modify serializedProperty.isExpanded if childrenHandled is false.
+					// If childrenHandled is true, a custom property drawer drew the children and has managed the isExpanded property.
+
+					bool hasChildrenAndIsExpanded = EditorGUILayout.PropertyField(serializedProperty, new GUIContent(serializedProperty.displayName), false);
+
+					if (childrenHandled)
+					{
+						childrenHandled = false;
+						drawChildren = false;
+					}
+					else
+					{
+						serializedProperty.isExpanded = hasChildrenAndIsExpanded;
+						drawChildren = hasChildrenAndIsExpanded;
+					}
 				}
 
-				if (serializedProperty.isExpanded)
+				if (drawChildren)
 				{
 					if (isList)
 					{
@@ -568,6 +593,11 @@ namespace WondeluxeEditor
 			}
 
 			return foldoutGroups[info.StartIndex];
+		}
+
+		private void OnPropertyChildrenHandled(SerializedProperty property)
+		{
+			childrenHandled = true;
 		}
 
 		#endregion

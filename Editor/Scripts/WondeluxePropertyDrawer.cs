@@ -188,6 +188,12 @@ namespace WondeluxeEditor
 
 		#endregion
 
+		#region Static API
+
+		public static event Action<SerializedProperty> OnChildrenHandled;
+
+		#endregion
+
 		#region Static methods
 
 		internal static bool InWondeluxeEditor { get; set; }
@@ -437,6 +443,16 @@ namespace WondeluxeEditor
 			}
 
 			EditorGUIUtility.labelWidth = labelWidth;
+		}
+
+		/// <summary>
+		/// Should be called when a custom property drawer handles the drawing of child properties and modifies <c>property.isExpanded</c>.
+		/// </summary>
+		/// <param name="property">The property whose children have been handled.</param>
+
+		protected static void ChildrenHandled(SerializedProperty property)
+		{
+			OnChildrenHandled?.Invoke(property);
 		}
 
 		#endregion
