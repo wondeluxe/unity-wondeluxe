@@ -17,7 +17,7 @@ namespace WondeluxeEditor
 			{
 				object target = property.GetParentObject();
 				Type targetType = target.GetType();
-				MethodInfo callbackMethod = targetType.GetMethod(Attribute.CallbackName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly);
+				MethodInfo callbackMethod = targetType.GetMethod(Attribute.CallbackName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly, null, Type.EmptyTypes, null);
 
 				if (callbackMethod == null)
 				{
