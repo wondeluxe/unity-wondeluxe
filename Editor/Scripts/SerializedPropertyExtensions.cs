@@ -123,7 +123,21 @@ namespace WondeluxeEditor
 				return null;
 			}
 
-			return parentType.GetField(serializedProperty.name, FieldBindingFlags);
+			// Traverse up the type's hierarchy to account for serialized private fields in parent classes.
+
+			while (parentType != null)
+			{
+				FieldInfo fieldInfo = parentType.GetField(serializedProperty.name, FieldBindingFlags);
+
+				if (fieldInfo != null)
+				{
+					return fieldInfo;
+				}
+
+				parentType = parentType.BaseType;
+			}
+
+			return null;
 		}
 
 		/// <summary>
@@ -250,9 +264,21 @@ namespace WondeluxeEditor
 				throw new Exception($"Unable to get array element index for property ({property.propertyPath}).");
 			}
 
-			FieldInfo fieldInfo = parentType.GetField(property.name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+			// Traverse up the type's hierarchy to account for serialized private fields in parent classes.
 
-			return fieldInfo.GetValue(parentObject);
+			while (parentType != null)
+			{
+				FieldInfo fieldInfo = parentType.GetField(property.name, FieldBindingFlags);
+
+				if (fieldInfo != null)
+				{
+					return fieldInfo.GetValue(parentObject);
+				}
+
+				parentType = parentType.BaseType;
+			}
+
+			return null;
 		}
 
 		/// <summary>
