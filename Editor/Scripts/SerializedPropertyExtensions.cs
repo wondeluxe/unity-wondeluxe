@@ -290,6 +290,42 @@ namespace WondeluxeEditor
 			return (T)property.GetValue();
 		}
 
+		/// <summary>
+		/// Returns the property's <see cref="Type"/> as declared in its owning object.
+		/// </summary>
+		/// <param name="property">The property whose declared type to get.</param>
+		/// <returns>The <see cref="Type"/> of the property.</returns>
+
+		public static Type GetDeclaredType(this SerializedProperty property)
+		{
+			// Must use GetParentObject here as property.serializedObject.targetObject will return the containing Unity object.
+			// GetParentObject returns the direct parent struct or object.
+
+			object parentObject = property.GetParentObject();
+			Type parentType = parentObject.GetType();
+
+			if (parentType.IsArrayOrList())
+			{
+				return parentType.GetElementType();
+			}
+
+			// Traverse up the type's hierarchy to account for serialized private fields in parent classes.
+
+			while (parentType != null)
+			{
+				FieldInfo fieldInfo = parentType.GetField(property.name, FieldBindingFlags);
+
+				if (fieldInfo != null)
+				{
+					return fieldInfo.FieldType;
+				}
+
+				parentType = parentType.BaseType;
+			}
+
+			throw new Exception($"Unable to resolve declared type for property ({property.propertyPath}).");
+		}
+
 		public static bool GetImplicitBoolValue(this SerializedProperty property)
 		{
 			object value = property.GetValue();
