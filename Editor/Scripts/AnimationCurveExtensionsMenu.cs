@@ -51,11 +51,6 @@ namespace WondeluxeEditor
 			menu.AddItem(new GUIContent($"Set From Equation/Elastic/In & Out"), false, () => OnEquationSelected(property, AnimationCurveExtensions.ElasticInOut));
 		}
 
-		//private static void LogAnimationCurveBezierPoints(AnimationCurve curve)
-		//{
-		//	Debug.Log($"Log animation curve points");
-		//}
-
 		private static void OnEquationSelected(SerializedProperty property, CreateCurveFunc createCurve)
 		{
 			property.animationCurveValue = createCurve(0f, 0f, 1f, 1f);
