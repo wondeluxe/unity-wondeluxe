@@ -656,15 +656,12 @@ namespace WondeluxeEditor
 					order = orderAttribute.PropertyOrder;
 				}
 
-				//bool inGroup = false;
 				SerializedPropertyGroupInfo groupInfo = new SerializedPropertyGroupInfo(null, order, propertyIndex, false);
 
 				GroupAttribute groupAttribute = property.GetAttribute<GroupAttribute>(true);
 
 				if (groupAttribute != null)
 				{
-					//inGroup = true;
-
 					if (currentGroupInfos.ContainsKey(groupAttribute.Name))
 					{
 						groupInfo = currentGroupInfos[groupAttribute.Name];
@@ -677,23 +674,15 @@ namespace WondeluxeEditor
 					}
 				}
 
-				//SerializedPropertyInfo propertyInfo = new SerializedPropertyInfo(property.propertyPath, propertyIndex++, order, groupInfo.Order, groupInfo.StartIndex);
 				SerializedPropertyInfo propertyInfo = new SerializedPropertyInfo(property.propertyPath, propertyIndex++, order, groupInfo);
 
 				object propertyValue = property.GetValue();
 
-				if (propertyValue == null)
-				{
-					Debug.LogWarning($"Property \"{property.name}\" is null!");
-				}
-				else
-				{
-					ScriptAttributeUtilityExtensions.GetDrawers(property, propertyInfo.PropertyDrawers);
-					GetShownMembers(propertyValue, propertyInfo.ShownMembers);
-					GetButtonMethods(propertyValue, propertyInfo.ButtonMethods);
+				ScriptAttributeUtilityExtensions.GetDrawers(property, propertyInfo.PropertyDrawers);
+				GetShownMembers(propertyValue, propertyInfo.ShownMembers);
+				GetButtonMethods(propertyValue, propertyInfo.ButtonMethods);
 
-					currentPropertyInfos.Add(propertyInfo);
-				}
+				currentPropertyInfos.Add(propertyInfo);
 			}
 		}
 
