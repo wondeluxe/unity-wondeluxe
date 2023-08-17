@@ -73,6 +73,11 @@ namespace WondeluxeEditor
 
 		public static void GetDrawers(FieldInfo fieldInfo, List<PropertyDrawer> propertyDrawers)
 		{
+			if (fieldInfo == null)
+			{
+				return;
+			}
+
 			Type fieldType = fieldInfo.FieldType.IsArray ? fieldInfo.FieldType.GetElementType() : fieldInfo.FieldType;
 
 			if (TryGetDrawer(fieldType, fieldInfo, null, out PropertyDrawer propertyDrawer))
