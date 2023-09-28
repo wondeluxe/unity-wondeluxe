@@ -28,7 +28,7 @@ namespace Wondeluxe
 		/// <summary>
 		/// Shortcut method for creating a ContactFilter2D that filters only for contacts that collide <b>into</b> the ray/shapecast.
 		/// i.e. the filter ignores contacts that occur behind the ray/shape and contacts on surfaces perpendicular to the ray.
-		/// The dot product between the ray normal and a contact's normal returned using this filter should be < 0.
+		/// The dot product between the ray direction and a contact's normal returned using this filter should be < 0.
 		/// </summary>
 		/// <param name="ray">Ray to create the filter for.</param>
 		/// <param name="layerMask">Layer mask to filter for.</param>
