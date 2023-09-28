@@ -682,18 +682,15 @@ namespace WondeluxeEditor
 
 				object propertyValue = property.GetValue();
 
-				if (propertyValue == null)
+				ScriptAttributeUtilityExtensions.GetDrawers(property, propertyInfo.PropertyDrawers);
+
+				if (propertyValue != null)
 				{
-					Debug.LogWarning($"Property \"{property.name}\" is null!");
-				}
-				else
-				{
-					ScriptAttributeUtilityExtensions.GetDrawers(property, propertyInfo.PropertyDrawers);
 					GetShownMembers(propertyValue, propertyInfo.ShownMembers);
 					GetButtonMethods(propertyValue, propertyInfo.ButtonMethods);
-
-					currentPropertyInfos.Add(propertyInfo);
 				}
+
+				currentPropertyInfos.Add(propertyInfo);
 			}
 		}
 
