@@ -656,15 +656,12 @@ namespace WondeluxeEditor
 					order = orderAttribute.PropertyOrder;
 				}
 
-				//bool inGroup = false;
 				SerializedPropertyGroupInfo groupInfo = new SerializedPropertyGroupInfo(null, order, propertyIndex, false);
 
 				GroupAttribute groupAttribute = property.GetAttribute<GroupAttribute>(true);
 
 				if (groupAttribute != null)
 				{
-					//inGroup = true;
-
 					if (currentGroupInfos.ContainsKey(groupAttribute.Name))
 					{
 						groupInfo = currentGroupInfos[groupAttribute.Name];
@@ -677,7 +674,6 @@ namespace WondeluxeEditor
 					}
 				}
 
-				//SerializedPropertyInfo propertyInfo = new SerializedPropertyInfo(property.propertyPath, propertyIndex++, order, groupInfo.Order, groupInfo.StartIndex);
 				SerializedPropertyInfo propertyInfo = new SerializedPropertyInfo(property.propertyPath, propertyIndex++, order, groupInfo);
 
 				object propertyValue = property.GetValue();
