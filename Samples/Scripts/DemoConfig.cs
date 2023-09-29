@@ -2,7 +2,9 @@ using System.IO;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEditor;
+#if UNITY_EDITOR
 using WondeluxeEditor;
+#endif
 
 namespace Wondeluxe.Samples
 {
@@ -16,6 +18,7 @@ namespace Wondeluxe.Samples
 		[ShowInInspector]
 		private readonly string fileType = "json";
 
+#if UNITY_EDITOR
 		[Button]
 		private void LoadData()
 		{
@@ -41,5 +44,6 @@ namespace Wondeluxe.Samples
 
 			return regex.IsMatch(assetPath);
 		}
+#endif
 	}
 }
