@@ -116,7 +116,14 @@ namespace WondeluxeEditor
 
 		public static FieldInfo GetFieldInfo(this SerializedProperty serializedProperty)
 		{
-			Type parentType = serializedProperty.GetParentObject().GetType();
+			object parentObject = serializedProperty.GetParentObject();
+
+			if (parentObject == null)
+			{
+				return null;
+			}
+
+			Type parentType = parentObject.GetType();
 
 			if (parentType.IsArrayOrList())
 			{
@@ -249,6 +256,12 @@ namespace WondeluxeEditor
 			// GetParentObject returns the direct parent struct or object.
 
 			object parentObject = property.GetParentObject();
+
+			if (parentObject == null)
+			{
+				return null;
+			}
+
 			Type parentType = parentObject.GetType();
 
 			if (parentType.IsArrayOrList())
