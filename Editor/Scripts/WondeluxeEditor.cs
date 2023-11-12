@@ -1,7 +1,6 @@
 using System;
 using System.Reflection;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
@@ -35,7 +34,6 @@ namespace WondeluxeEditor
 		/// Fields and properties and all stored in the same list so they can be sorted and displayed in order of declaration.
 		/// </summary>
 
-		//private readonly SerializedPropertyInfo rootPropertyInfo = new SerializedPropertyInfo(null, 0, 0, 0, 0);
 		private SerializedPropertyInfo rootPropertyInfo = new SerializedPropertyInfo(null, 0, 0, new SerializedPropertyGroupInfo(null, 0, 0, false));
 
 		private readonly Stack<List<SerializedPropertyInfo>> serializedListElementInfosStack = new Stack<List<SerializedPropertyInfo>>();
@@ -58,52 +56,39 @@ namespace WondeluxeEditor
 
 		protected virtual void OnEnable()
 		{
-			// First property is Base.
-			//SerializedProperty serializedProperty = serializedObject.GetIterator();
-
-			// Second property is Script reference.
-			//serializedProperty.NextVisible(true);
-
-			//GetSerializedPropertyInfo(serializedProperty, rootPropertyInfo.Children);
-			//GetShownMembers(target, rootPropertyInfo.ShownMembers);
-			//GetButtonMethods(target, rootPropertyInfo.ButtonMethods);
-		}
-
-		protected virtual void OnDisable()
-		{
-		}
-
-		public override void OnInspectorGUI()
-		{
-			//Debug.Log($"<b>{name} OnInspectorGUI</b>");
-
-			rootPropertyInfo = new SerializedPropertyInfo(null, 0, 0, new SerializedPropertyGroupInfo(null, 0, 0, false));
+			// Debug.Log($"<b>{name} OnEnable</b>");
 
 			// First property is Base.
 			SerializedProperty serializedProperty = serializedObject.GetIterator();
 
-			// Second property is Script reference.
+			// Second property is Script reference. Will return false if selected item is a folder.
 			if (serializedProperty.NextVisible(true))
 			{
 				GetSerializedPropertyInfo(serializedProperty, rootPropertyInfo.Children);
 				GetShownMembers(target, rootPropertyInfo.ShownMembers);
 				GetButtonMethods(target, rootPropertyInfo.ButtonMethods);
+			}
+		}
 
+		public override void OnInspectorGUI()
+		{
+			// Debug.Log($"<b>{name} OnInspectorGUI</b>");
+
+			// First property is Base.
+			SerializedProperty serializedProperty = serializedObject.GetIterator();
+
+			// Second property is Script reference. Will return false if selected item is a folder.
+			if (serializedProperty.NextVisible(true))
+			{
 				if (rootPropertyInfo.RequiresCustomInspector)
 				{
 					//Debug.Log($"<b>{name} DrawDefaultInspector</b>");
 
-					//DrawDefaultInspector();
-
 					indentLevel = EditorGUI.indentLevel;
+
 					WondeluxePropertyDrawer.IndentLevel = EditorGUI.indentLevel;
 					WondeluxePropertyDrawer.InWondeluxeEditor = true;
 					WondeluxePropertyDrawer.OnChildrenHandled += OnPropertyChildrenHandled;
-
-					//EditorGUILayout.Space();
-					//EditorGUILayout.LabelField("Custom Inspector", EditorStyles.boldLabel);
-
-					//Debug.Log($"<b>{name} DrawCustomInspector</b>");
 
 					DrawCustomInspector();
 
@@ -243,8 +228,6 @@ namespace WondeluxeEditor
 
 		private void DrawPropertiesLayout(List<SerializedPropertyInfo> serializedPropertyInfos)
 		{
-			serializedPropertyInfos.Sort(SerializedPropertyInfo.Compare);
-
 			FoldoutGroup currentFoldoutGroup = null;
 
 			foreach (SerializedPropertyInfo info in serializedPropertyInfos)
@@ -291,8 +274,6 @@ namespace WondeluxeEditor
 
 		private void DrawProperties(List<SerializedPropertyInfo> serializedPropertyInfos, ref Rect position)
 		{
-			serializedPropertyInfos.Sort(SerializedPropertyInfo.Compare);
-
 			FoldoutGroup currentFoldoutGroup = null;
 
 			foreach (SerializedPropertyInfo info in serializedPropertyInfos)
@@ -606,8 +587,6 @@ namespace WondeluxeEditor
 
 		private static void GetSerializedPropertyInfo(SerializedProperty property, List<SerializedPropertyInfo> serializedPropertyInfos)
 		{
-			Regex depthSeparatorRegex = new Regex(Regex.Escape("."));
-
 			Stack<List<SerializedPropertyInfo>> propertyInfosStack = new Stack<List<SerializedPropertyInfo>>();
 			List<SerializedPropertyInfo> currentPropertyInfos = serializedPropertyInfos;
 			int currentPropertyDepth = 0;
@@ -688,6 +667,8 @@ namespace WondeluxeEditor
 
 				currentPropertyInfos.Add(propertyInfo);
 			}
+
+			serializedPropertyInfos.Sort(SerializedPropertyInfo.Compare);
 		}
 
 		private static void GetShownMembers(object target, List<MemberInfo> shownMembers)
