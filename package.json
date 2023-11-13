@@ -1,6 +1,6 @@
 {
   "name": "com.wondeluxe",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "displayName": "Wondeluxe",
   "description": "General purpose scripts, attributes and extensions for making life in Unity easier.",
   "unity": "2020.3",
