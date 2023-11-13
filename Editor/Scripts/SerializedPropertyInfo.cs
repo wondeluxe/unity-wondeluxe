@@ -68,18 +68,6 @@ namespace WondeluxeEditor
 		{
 			if (infoA.Group.StartIndex == infoB.Group.StartIndex)
 			{
-				// If GroupStartIndex equals DefaultIndex then the property started the group and should appear first.
-
-				if (infoA.Group.StartIndex == infoA.DefaultIndex)
-				{
-					return -1;
-				}
-
-				if (infoB.Group.StartIndex == infoB.DefaultIndex)
-				{
-					return 1;
-				}
-
 				if (infoA.Order < infoB.Order)
 				{
 					return -1;
@@ -114,7 +102,7 @@ namespace WondeluxeEditor
 					return 1;
 				}
 
-				// GroupStartIndex will match DefaultIndex for properties that aren't in groups.
+				// Group.StartIndex will match DefaultIndex for properties that aren't in groups.
 
 				if (infoA.Group.StartIndex < infoB.Group.StartIndex)
 				{
