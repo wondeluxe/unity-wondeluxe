@@ -4,3 +4,5 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://github.com/wondeluxe/unity-wondeluxe/blob/main/LICENSE.md)
 
 Unity package containing general purpose scripts, attributes and extensions for making life in Unity easier.
+
+- [Documentation](https://wondeluxe.github.io/unity-docs/wondeluxe/)
