@@ -128,5 +128,51 @@ namespace Wondeluxe
 
 			return d;
 		}
+
+		/// <summary>
+		/// Finds the nearest incremental value within a range.
+		/// </summary>
+		/// <param name="value">The value to find the nearest incremental value to.</param>
+		/// <param name="min">The minimum value of the range.</param>
+		/// <param name="max">The maximum value of the range.</param>
+		/// <param name="increments">The number of increments to get to <c>max</c> from <c>min</c>.</param>
+		/// <returns>The nearest incremental value to <c>value</c>.</returns>
+
+		public static float Snap(float value, float min, float max, int increments)
+		{
+			if (increments <= 0)
+			{
+				increments = 1;
+			}
+
+			value = Mathf.Clamp(value, min, max);
+
+			float step = (max - min) / increments;
+
+			return min + Mathf.RoundToInt((value - min) / step) * step;
+		}
+
+		/// <summary>
+		/// Finds the nearest incremental value within a range.
+		/// </summary>
+		/// <param name="value">The value to find the nearest incremental value to.</param>
+		/// <param name="min">The minimum value of the range.</param>
+		/// <param name="max">The maximum value of the range.</param>
+		/// <param name="increments">The number of increments to get to <c>max</c> from <c>min</c>.</param>
+		/// <returns>The nearest incremental value to <c>value</c>.</returns>
+
+		public static int Snap(int value, int min, int max, int increments)
+		{
+			if (increments <= 0)
+			{
+				increments = 1;
+			}
+
+			value = Mathf.Clamp(value, min, max);
+
+			float step = (float)(max - min) / increments;
+
+			return min + (int)(Mathf.RoundToInt((value - min) / step) * step);
+		}
 	}
 }
