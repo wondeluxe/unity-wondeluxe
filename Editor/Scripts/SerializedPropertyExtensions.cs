@@ -103,7 +103,7 @@ namespace WondeluxeEditor
 			}
 			else
 			{
-				Debug.LogWarning($"Parent object for serialized property is null.");
+				Debug.LogWarning($"Parent object for serialized property \"{serializedProperty.propertyPath}\" is null.");
 			}
 
 			return null;
@@ -132,19 +132,7 @@ namespace WondeluxeEditor
 
 			// Traverse up the type's hierarchy to account for serialized private fields in parent classes.
 
-			while (parentType != null)
-			{
-				FieldInfo fieldInfo = parentType.GetField(serializedProperty.name, FieldBindingFlags);
-
-				if (fieldInfo != null)
-				{
-					return fieldInfo;
-				}
-
-				parentType = parentType.BaseType;
-			}
-
-			return null;
+			return parentType.GetFieldInHierarchy(serializedProperty.name, FieldBindingFlags);
 		}
 
 		/// <summary>
@@ -199,7 +187,7 @@ namespace WondeluxeEditor
 					// Group 2 contains either a property name or Array.data[#].
 					// Group 3 contains the Array.data index if present.
 
-					target = (match.Groups[2].Success) ? GetArrayElementValue(target, Convert.ToInt32(match.Groups[2].Value)) : GetMemberValue(target, match.Groups[1].Value);
+					target = match.Groups[2].Success ? GetArrayElementValue(target, Convert.ToInt32(match.Groups[2].Value)) : GetMemberValue(target, match.Groups[1].Value);
 				}
 			}
 
@@ -211,21 +199,25 @@ namespace WondeluxeEditor
 			if (target != null)
 			{
 				Type type = target.GetType();
-				FieldInfo fieldInfo = type.GetField(name, FieldBindingFlags);
 
-				if (fieldInfo == null)
+				while (type != null)
 				{
-					PropertyInfo propertyInfo = type.GetProperty(name, PropertyBindingFlags);
+					FieldInfo fieldInfo = type.GetField(name, FieldBindingFlags);
 
-					if (propertyInfo == null)
+					if (fieldInfo != null)
 					{
-						return null;
+						return fieldInfo.GetValue(target);
 					}
 
-					return propertyInfo.GetValue(target, null);
-				}
+					PropertyInfo propertyInfo = type.GetProperty(name, PropertyBindingFlags);
 
-				return fieldInfo.GetValue(target);
+					if (propertyInfo != null)
+					{
+						return propertyInfo.GetValue(target, null);
+					}
+
+					type = type.BaseType;
+				}
 			}
 
 			return null;
@@ -279,16 +271,11 @@ namespace WondeluxeEditor
 
 			// Traverse up the type's hierarchy to account for serialized private fields in parent classes.
 
-			while (parentType != null)
+			FieldInfo fieldInfo = parentType.GetFieldInHierarchy(property.name, FieldBindingFlags);
+
+			if (fieldInfo != null)
 			{
-				FieldInfo fieldInfo = parentType.GetField(property.name, FieldBindingFlags);
-
-				if (fieldInfo != null)
-				{
-					return fieldInfo.GetValue(parentObject);
-				}
-
-				parentType = parentType.BaseType;
+				return fieldInfo.GetValue(parentObject);
 			}
 
 			return null;
@@ -324,16 +311,11 @@ namespace WondeluxeEditor
 
 			// Traverse up the type's hierarchy to account for serialized private fields in parent classes.
 
-			while (parentType != null)
+			FieldInfo fieldInfo = parentType.GetFieldInHierarchy(property.name, FieldBindingFlags);
+
+			if (fieldInfo != null)
 			{
-				FieldInfo fieldInfo = parentType.GetField(property.name, FieldBindingFlags);
-
-				if (fieldInfo != null)
-				{
-					return fieldInfo.FieldType;
-				}
-
-				parentType = parentType.BaseType;
+				return fieldInfo.FieldType;
 			}
 
 			throw new Exception($"Unable to resolve declared type for property ({property.propertyPath}).");
