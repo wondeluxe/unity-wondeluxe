@@ -119,6 +119,8 @@ namespace WondeluxeEditor
 
 		private void DrawCustomInspector()
 		{
+			serializedObject.UpdateIfRequiredOrScript();
+
 			bool guiEnabled = GUI.enabled;
 
 			SerializedProperty scriptProperty = serializedObject.FindProperty("m_Script");

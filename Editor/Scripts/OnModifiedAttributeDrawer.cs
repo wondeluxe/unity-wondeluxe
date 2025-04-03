@@ -15,8 +15,9 @@ namespace WondeluxeEditor
 		{
 			if (valueChanged && Attribute.CanInvokeCallback)
 			{
-				object target = property.GetParentObject();
-				Type targetType = target.GetType();
+				// Use GetParentObjects to handle
+				object[] targets = property.GetParentObjects();
+				Type targetType = targets[0].GetType();
 				MethodInfo callbackMethod = targetType.GetMethod(Attribute.CallbackName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly, null, Type.EmptyTypes, null);
 
 				if (callbackMethod == null)
@@ -31,7 +32,11 @@ namespace WondeluxeEditor
 				{
 					// Modifications must be applied so that the new value is updated in the serialized object.
 					property.serializedObject.ApplyModifiedProperties();
-					callbackMethod.Invoke(target, new object[] { });
+
+					foreach (object target in targets)
+					{
+						callbackMethod.Invoke(target, new object[] { });
+					}
 				}
 			}
 		}

@@ -6,6 +6,8 @@ using UnityEngine;
 using UnityEditor;
 using Wondeluxe;
 
+using Object = UnityEngine.Object;
+
 namespace WondeluxeEditor
 {
 	public static class SerializedPropertyExtensions
@@ -165,14 +167,14 @@ namespace WondeluxeEditor
 		}
 
 		/// <summary>
-		/// Returns the System.Object that the SerializedProperty belongs to.
+		/// Returns the <c>System.Object</c>that the SerializedProperty belongs to.
 		/// </summary>
-		/// <returns>The System.Object that the SerializedProperty belongs to.</returns>
+		/// <returns>The object that the SerializedProperty belongs to.</returns>
 
 		public static object GetParentObject(this SerializedProperty serializedProperty)
 		{
 			// Find the path to serializedProperty's parent. If the match fails, serializedProperty is a direct property on its serializedObject.
-			// If a parent exists, step down the each property until we reach serializedProperty's parent.
+			// If a parent exists, step down each property until we reach serializedProperty's parent.
 
 			object target = serializedProperty.serializedObject.targetObject;
 
@@ -192,6 +194,48 @@ namespace WondeluxeEditor
 			}
 
 			return target;
+		}
+
+		/// <summary>
+		/// Returns the <c>System.Object</c> that the SerializedProperty belongs to, for all selected components.
+		/// </summary>
+		/// <returns>An array of objects for all selected components.</returns>
+
+		public static object[] GetParentObjects(this SerializedProperty serializedProperty)
+		{
+			// Find the path to serializedProperty's parent. If the match fails, serializedProperty is a direct property on its serializedObject.
+			// If a parent exists, step down each property until we reach serializedProperty's parent.
+
+			Object[] targetObjects = serializedProperty.serializedObject.targetObjects;
+
+			Match parentPathMatch = ParentPathRegex.Match(serializedProperty.propertyPath);
+
+			object[] targets = new object[targetObjects.Length];
+
+			if (parentPathMatch.Success)
+			{
+				MatchCollection matches = PropertyComponentsRegex.Matches(parentPathMatch.Groups[1].Value);
+
+				foreach (Match match in matches)
+				{
+					// Group 2 contains either a property name or Array.data[#].
+					// Group 3 contains the Array.data index if present.
+
+					for (int i = 0; i < targets.Length; i++)
+					{
+						targets[i] = match.Groups[2].Success ? GetArrayElementValue(targets[i], Convert.ToInt32(match.Groups[2].Value)) : GetMemberValue(targets[i], match.Groups[1].Value);
+					}
+				}
+			}
+			else
+			{
+				for (int i = 0; i < targets.Length; i++)
+				{
+					targets[i] = targetObjects[i];
+				}
+			}
+
+			return targets;
 		}
 
 		private static object GetMemberValue(object target, string name)
