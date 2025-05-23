@@ -13,7 +13,7 @@ namespace WondeluxeEditor
 	public static class SerializedPropertyExtensions
 	{
 		private const BindingFlags FieldBindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-		private const BindingFlags PropertyBindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.IgnoreCase;
+		private const BindingFlags PropertyBindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
 		/// <summary>
 		/// Regular Expression for obtaining a SerializedProperty's parent property's path. The parent property's path will be found in group 1.
