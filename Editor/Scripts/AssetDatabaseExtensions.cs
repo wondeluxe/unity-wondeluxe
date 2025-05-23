@@ -1,8 +1,12 @@
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using Wondeluxe;
 
+using Exception = System.Exception;
+using ArgumentException = System.ArgumentException;
 using Array = System.Array;
 
 namespace WondeluxeEditor
@@ -74,12 +78,17 @@ namespace WondeluxeEditor
 		};
 
 		/// <summary>
-		/// Gets the root directory of the Unity project (containing Assets folder and solution) on the user's system.
+		/// Gets the root directory of the Unity project on the user's system.
 		/// </summary>
+		/// <remarks>
+		/// This evaluates to the same value as <c>Application.dataPath</c> but with "/Assets" stripped from the end.
+		/// </remarks>
 
-		// Application.dataPath includes Assets folder, GetDirectoryName strips this.
-
-		public static string ProjectPath => Path.GetDirectoryName(Application.dataPath);
+		public static string ProjectPath
+		{
+			// Application.dataPath includes Assets folder, GetDirectoryName strips this.
+			get { return Path.GetDirectoryName(Application.dataPath); }
+		}
 
 		/// <summary>
 		/// Search the asset database for an asset's path.
@@ -389,6 +398,91 @@ namespace WondeluxeEditor
 			}
 
 			return sprites;
+		}
+
+		/// <summary>
+		/// Injects a series of member definitions into a source script file. The method will replace all pre-existing
+		/// contiguous definitions found in the file with matching type and access modifiers.
+		/// </summary>
+		/// <param name="scriptAsset">The asset of the script file to inject values into.</param>
+		/// <param name="memberValues">The source code of member definitions to inject.</param>
+		/// <exception cref="ArgumentException"><c>memberValues</c> do not adhere to the expected format.</exception>
+		/// <exception cref="Exception">Unable to parse <c>scriptAsset</c>.</exception>
+
+		public static void InjectMemberValues(TextAsset scriptAsset, string[] memberValues)
+		{
+			string assetPath = AssetDatabase.GetAssetPath(scriptAsset);
+			string scriptPath = Path.Combine(ProjectPath, assetPath);
+
+			string content = File.ReadAllText(scriptPath);
+
+			string regex = @"(.*)\s+\w+\s*=.*;";
+
+			Match match = Regex.Match(memberValues[0], regex);
+
+			if (!match.Success || !match.Groups[1].Success)
+			{
+				throw new ArgumentException("Member values do not adhere to the expected format.", nameof(memberValues));
+			}
+
+			string declaration = match.Groups[1].Value;
+
+			regex = @"(.*class\s+\w+[^{]*{\s*\n)(.*#DECLARATION#\s+[^=]*=\s*[^;]+;)*(.*)".Replace("#DECLARATION#", declaration);
+
+			match = Regex.Match(content, regex, RegexOptions.Singleline);
+
+			// Not concerned whether the second group (index = 2) matches or not. This is the existing values, if present.
+
+			if (!match.Success || !match.Groups[1].Success || !match.Groups[3].Success)
+			{
+				throw new Exception("Unable to parse script.");
+			}
+
+			string openContent = match.Groups[1].Value;
+			string closeContent = match.Groups[3].Value;
+			string valueContent = match.Groups[2].Success ? match.Groups[2].Value : null;
+
+			string indentation = "";
+
+			if (valueContent != null)
+			{
+				regex = @"(\s*)#DECLARATION#".Replace("#DECLARATION#", declaration);
+
+				match = Regex.Match(valueContent, regex);
+
+				if (match.Success && match.Groups[1].Success)
+				{
+					indentation = match.Groups[1].Value;
+				}
+			}
+			else
+			{
+				string indent = openContent.InterpretIndentation(out int level);
+
+				if (indent != null)
+				{
+					for (int i = 0; i < level; i++)
+					{
+						indentation += indent;
+					}
+				}
+
+				closeContent = "\n" + closeContent;
+			}
+
+			string newValueContent = $"{indentation}{string.Join($"\n{indentation}", memberValues)}";
+
+			if (newValueContent == valueContent)
+			{
+				return;
+			}
+
+			content = $"{openContent}{newValueContent}{closeContent}";
+
+			File.WriteAllText(scriptPath, content);
+			AssetDatabase.Refresh();
+
+			Debug.Log($"Script \"{assetPath}\" updated:\n{content}");
 		}
 	}
 }
